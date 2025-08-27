@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { LogOut, User, Crown, GraduationCap } from 'lucide-react';
+import logo from '@/logo.png'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +21,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
-          <GraduationCap className="h-8 w-8 text-primary" />
+          <img src={logo} className="h-8 w-8"/>
           <span className="text-xl font-bold gradient-text">Circle Belajar Bareng</span>
         </Link>
 
