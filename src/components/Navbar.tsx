@@ -21,7 +21,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
-          <img src={logo} className="h-12 w-12"/>
+          <img src={logo} className="h-12 w-12 rounded-full"/>
           <span className="text-xl font-bold gradient-text">Circle Belajar Bareng</span>
         </Link>
 
