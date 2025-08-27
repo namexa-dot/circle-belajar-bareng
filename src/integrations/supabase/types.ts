@@ -14,7 +14,98 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          nama_kategori: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nama_kategori: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nama_kategori?: string
+        }
+        Relationships: []
+      }
+      educations: {
+        Row: {
+          created_at: string
+          id: string
+          is_premium: boolean
+          judul: string
+          kategori_id: string
+          konten: string | null
+          media_url: string | null
+          tipe: Database["public"]["Enums"]["content_type"]
+          topik: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_premium?: boolean
+          judul: string
+          kategori_id: string
+          konten?: string | null
+          media_url?: string | null
+          tipe: Database["public"]["Enums"]["content_type"]
+          topik: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_premium?: boolean
+          judul?: string
+          kategori_id?: string
+          konten?: string | null
+          media_url?: string | null
+          tipe?: Database["public"]["Enums"]["content_type"]
+          topik?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "educations_kategori_id_fkey"
+            columns: ["kategori_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          nama: string
+          premium_until: string | null
+          role: Database["public"]["Enums"]["user_role"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          nama: string
+          premium_until?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nama?: string
+          premium_until?: string | null
+          role?: Database["public"]["Enums"]["user_role"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +114,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      content_type: "artikel" | "video" | "gambar"
+      user_role: "biasa" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +242,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      content_type: ["artikel", "video", "gambar"],
+      user_role: ["biasa", "premium"],
+    },
   },
 } as const
