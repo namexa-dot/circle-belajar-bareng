@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   Crown, 
   Check, 
@@ -83,11 +84,39 @@ const Premium = () => {
       return;
     }
 
-    // For now, this is a placeholder for the payment process
-    toast({
-      title: 'Coming Soon!',
-      description: 'Fitur pembayaran akan segera tersedia. Terima kasih atas minat Anda!',
-    });
+    try {
+      toast({
+        title: 'Memproses...',
+        description: 'Sedang menyiapkan halaman pembayaran Anda',
+      });
+
+      const { data, error } = await supabase.functions.invoke('create-payment', {
+        body: { paket: planId }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.redirect_url) {
+        // Open Midtrans payment page in a new tab
+        window.open(data.redirect_url, '_blank');
+        
+        toast({
+          title: 'Pembayaran Dibuka',
+          description: 'Halaman pembayaran telah dibuka di tab baru. Silakan lanjutkan pembayaran Anda.',
+        });
+      } else {
+        throw new Error('Payment URL not received');
+      }
+    } catch (error: any) {
+      console.error('Payment error:', error);
+      toast({
+        title: 'Gagal Memproses Pembayaran',
+        description: error.message || 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const isPremium = profile?.role === 'premium' && 
