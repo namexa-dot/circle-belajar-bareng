@@ -87,7 +87,7 @@ const Premium = () => {
     try {
       toast({
         title: 'Memproses...',
-        description: 'Sedang menyiapkan halaman pembayaran Anda',
+        description: 'Sedang menyiapkan pembayaran Anda',
       });
 
       const { data, error } = await supabase.functions.invoke('create-payment', {
@@ -98,16 +98,43 @@ const Premium = () => {
         throw error;
       }
 
-      if (data?.redirect_url) {
-        // Open Midtrans payment page in a new tab
-        window.open(data.redirect_url, '_blank');
-        
-        toast({
-          title: 'Pembayaran Dibuka',
-          description: 'Halaman pembayaran telah dibuka di tab baru. Silakan lanjutkan pembayaran Anda.',
+      if (data?.token) {
+        // Use Snap.js popup
+        (window as any).snap.pay(data.token, {
+          onSuccess: function(result: any) {
+            console.log('Payment success:', result);
+            toast({
+              title: 'Pembayaran Berhasil!',
+              description: 'Selamat! Akun Anda telah diupgrade ke Premium.',
+            });
+            // Refresh page to update premium status
+            window.location.reload();
+          },
+          onPending: function(result: any) {
+            console.log('Payment pending:', result);
+            toast({
+              title: 'Pembayaran Pending',
+              description: 'Pembayaran Anda sedang diproses. Mohon tunggu konfirmasi.',
+            });
+          },
+          onError: function(result: any) {
+            console.log('Payment error:', result);
+            toast({
+              title: 'Pembayaran Gagal',
+              description: 'Terjadi kesalahan saat memproses pembayaran. Silakan coba lagi.',
+              variant: 'destructive',
+            });
+          },
+          onClose: function() {
+            console.log('Payment popup closed');
+            toast({
+              title: 'Pembayaran Dibatalkan',
+              description: 'Anda membatalkan proses pembayaran.',
+            });
+          }
         });
       } else {
-        throw new Error('Payment URL not received');
+        throw new Error('Payment token not received');
       }
     } catch (error: any) {
       console.error('Payment error:', error);

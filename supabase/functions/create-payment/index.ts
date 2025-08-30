@@ -90,12 +90,7 @@ serve(async (req) => {
         price: amount,
         quantity: 1,
         name: `Premium Membership ${paket === 'monthly' ? '1 Bulan' : '1 Tahun'}`
-      }],
-      callbacks: {
-        finish: `${req.headers.get("origin")}/payment-success?order_id=${orderId}`,
-        error: `${req.headers.get("origin")}/payment-failed?order_id=${orderId}`,
-        pending: `${req.headers.get("origin")}/payment-pending?order_id=${orderId}`
-      }
+      }]
     };
 
     // Create Snap transaction with Midtrans
@@ -119,7 +114,6 @@ serve(async (req) => {
 
     return new Response(JSON.stringify({
       token: midtransData.token,
-      redirect_url: midtransData.redirect_url,
       order_id: orderId
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
