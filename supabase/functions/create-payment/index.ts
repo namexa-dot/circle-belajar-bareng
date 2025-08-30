@@ -93,8 +93,8 @@ serve(async (req) => {
       }]
     };
 
-    // Create Snap transaction with Midtrans
-    const midtransResponse = await fetch('https://app.midtrans.com/snap/v1/transactions', {
+    // Create Snap transaction with Midtrans (using sandbox for testing)
+    const midtransResponse = await fetch('https://app.sandbox.midtrans.com/snap/v1/transactions', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -106,8 +106,9 @@ serve(async (req) => {
 
     if (!midtransResponse.ok) {
       const errorText = await midtransResponse.text();
-      console.error('Midtrans API error:', errorText);
-      throw new Error('Failed to create payment session');
+      console.error('Midtrans API error status:', midtransResponse.status);
+      console.error('Midtrans API error response:', errorText);
+      throw new Error(`Midtrans API Error (${midtransResponse.status}): ${errorText}`);
     }
 
     const midtransData = await midtransResponse.json();
