@@ -17,11 +17,25 @@ serve(async (req) => {
   }
 
   try {
+    // Check required environment variables
+    const midtransServerKey = Deno.env.get("MIDTRANS_SERVER_KEY");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    if (!midtransServerKey) {
+      console.error('MIDTRANS_SERVER_KEY environment variable is not set');
+      throw new Error('Midtrans server key not configured');
+    }
+
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('Supabase environment variables are not set');
+      throw new Error('Supabase configuration not found');
+    }
+
+    console.log('Environment variables check passed');
+
     // Create Supabase client with service role key for database operations
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get authenticated user
     const authHeader = req.headers.get("Authorization");
@@ -94,12 +108,13 @@ serve(async (req) => {
     };
 
     // Create Snap transaction with Midtrans (using sandbox for testing)
+    console.log('Creating Midtrans Snap transaction...');
     const midtransResponse = await fetch('https://app.sandbox.midtrans.com/snap/v1/transactions', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        'Authorization': `Basic ${btoa(Deno.env.get("MIDTRANS_SERVER_KEY") + ":")}`
+        'Authorization': `Basic ${btoa(midtransServerKey + ":")}`
       },
       body: JSON.stringify(snapTransaction)
     });
