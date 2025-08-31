@@ -141,7 +141,7 @@ const Edukasi = () => {
           </div>
 
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <TabsList className="grid w-full md:grid-cols-3 grid-cols-7 lg:grid-cols-7 mb-6">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 mb-6">
               <TabsTrigger value="semua">Semua</TabsTrigger>
               {categories.map((category) => (
                 <TabsTrigger key={category.id} value={category.nama_kategori}>
