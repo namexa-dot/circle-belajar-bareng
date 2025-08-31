@@ -79,6 +79,42 @@ export type Database = {
           },
         ]
       }
+      premium_packages: {
+        Row: {
+          created_at: string
+          description: string | null
+          duration_months: number
+          id: string
+          is_active: boolean | null
+          is_popular: boolean | null
+          name: string
+          price: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          duration_months: number
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          name: string
+          price: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          duration_months?: number
+          id?: string
+          is_active?: boolean | null
+          is_popular?: boolean | null
+          name?: string
+          price?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string

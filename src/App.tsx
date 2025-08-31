@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import PaymentFailed from "./pages/PaymentFailed";
 import PaymentPending from "./pages/PaymentPending";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/edukasi" element={<Edukasi />} />
               <Route path="/premium" element={<Premium />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin" element={<Admin />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/payment-failed" element={<PaymentFailed />} />
               <Route path="/payment-pending" element={<PaymentPending />} />

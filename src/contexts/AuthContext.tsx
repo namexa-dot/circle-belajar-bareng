@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 interface Profile {
   id: string;
   nama: string;
-  role: 'biasa' | 'premium';
+  role: 'biasa' | 'premium' | 'admin';
   premium_until?: string;
   created_at?: string;
 }

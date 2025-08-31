@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
-import { LogOut, User, Crown, GraduationCap } from 'lucide-react';
+import { LogOut, User, Crown, GraduationCap, Shield } from 'lucide-react';
 import logo from '@/logo.png'
 import {
   DropdownMenu,
@@ -62,6 +62,9 @@ const Navbar = () => {
                   {profile?.role === 'premium' && (
                     <Crown className="h-4 w-4 text-primary" />
                   )}
+                  {profile?.role === 'admin' && (
+                    <Shield className="h-4 w-4 text-primary" />
+                  )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
@@ -71,6 +74,14 @@ const Navbar = () => {
                     Profil
                   </Link>
                 </DropdownMenuItem>
+                {profile?.role === 'admin' && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="w-full">
+                      <Shield className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={signOut}>
                   <LogOut className="mr-2 h-4 w-4" />
                   Keluar
