@@ -60,8 +60,10 @@ serve(async (req) => {
     // Set amount based on paket
     const amount = paket === 'monthly' ? 40000 : 400000;
     
-    // Generate unique order ID
-    const orderId = `premium-${user.id}-${Date.now()}`;
+    // Generate unique order ID (shortened for Midtrans compatibility)
+    const timestamp = Date.now().toString();
+    const userIdShort = user.id.substring(0, 8); // Take first 8 chars of UUID
+    const orderId = `prem-${userIdShort}-${timestamp}`;
 
     // Get user profile for customer details
     const { data: profile } = await supabaseClient
