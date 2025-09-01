@@ -93,6 +93,29 @@ const EdukasiDetail = () => {
     }
   };
 
+  const convertYouTubeToEmbed = (url: string) => {
+    if (!url) return url;
+    
+    // Handle youtu.be format
+    const youtubeShortMatch = url.match(/youtu\.be\/([a-zA-Z0-9_-]+)/);
+    if (youtubeShortMatch) {
+      return `https://www.youtube.com/embed/${youtubeShortMatch[1]}`;
+    }
+    
+    // Handle youtube.com/watch format
+    const youtubeLongMatch = url.match(/youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)/);
+    if (youtubeLongMatch) {
+      return `https://www.youtube.com/embed/${youtubeLongMatch[1]}`;
+    }
+    
+    // Handle youtube.com/embed format (already correct)
+    if (url.includes('youtube.com/embed/')) {
+      return url;
+    }
+    
+    return url;
+  };
+
   const renderMedia = () => {
     if (!education?.media_url) return null;
 
@@ -101,9 +124,10 @@ const EdukasiDetail = () => {
         return (
           <div className="aspect-video w-full mb-6">
             <iframe
-              src={education.media_url}
-              className="w-full h-full rounded-lg"
+              src={convertYouTubeToEmbed(education.media_url)}
+              className="w-full h-full rounded-lg border-0"
               allowFullScreen
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               title={education.judul}
             />
           </div>
