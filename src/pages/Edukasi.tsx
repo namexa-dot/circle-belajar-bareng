@@ -141,10 +141,10 @@ const Edukasi = () => {
           </div>
 
           <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-7 mb-6">
-              <TabsTrigger value="semua">Semua</TabsTrigger>
+            <TabsList className="flex w-full overflow-x-auto scrollbar-hide gap-1 p-1 mb-6 md:grid md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8">
+              <TabsTrigger value="semua" className="shrink-0 px-4 py-2">Semua</TabsTrigger>
               {categories.map((category) => (
-                <TabsTrigger key={category.id} value={category.nama_kategori}>
+                <TabsTrigger key={category.id} value={category.nama_kategori} className="shrink-0 px-4 py-2 whitespace-nowrap">
                   {category.nama_kategori}
                 </TabsTrigger>
               ))}
