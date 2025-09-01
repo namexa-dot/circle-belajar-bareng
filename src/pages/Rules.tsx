@@ -10,6 +10,11 @@ import { ClipboardIcon } from 'lucide-react';
 const Rules = () => {
   return (
     <div className="min-h-screen py-12 px-4">
+      <Card 
+        classname='card-gradient relative cursor-pointer transition-all duration-300
+        ring-2 ring-primary scale-105'>
+        RULES KOMUNITAS CIRCLE BELAJAR BARENG
+      </Card>
     </div>
   );
 };
