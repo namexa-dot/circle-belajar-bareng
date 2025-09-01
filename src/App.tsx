@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Edukasi from "./pages/Edukasi";
+import EdukasiDetail from "./pages/EdukasiDetail";
 import Premium from "./pages/Premium";
 import Profile from "./pages/Profile";
 import PaymentSuccess from "./pages/PaymentSuccess";
@@ -31,6 +32,7 @@ const App = () => (
               <Route path="/" element={<Home />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/edukasi" element={<Edukasi />} />
+              <Route path="/edukasi/:id" element={<EdukasiDetail />} />
               <Route path="/premium" element={<Premium />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<Admin />} />
