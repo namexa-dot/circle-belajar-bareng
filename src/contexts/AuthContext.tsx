@@ -62,6 +62,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Auto-refresh profile every 30 seconds when user is authenticated
+  useEffect(() => {
+    if (!user) return;
+
+    const interval = setInterval(() => {
+      fetchProfile(user.id);
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [user]);
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

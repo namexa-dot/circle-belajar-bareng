@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,7 +17,10 @@ import {
   Star,
   TrendingUp,
   Target,
-  Award
+  Award,
+  RefreshCw,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 
 const Profile = () => {
@@ -26,6 +29,12 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [nama, setNama] = useState(profile?.nama || '');
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshingStatus, setIsRefreshingStatus] = useState(false);
+
+  // Update nama when profile changes
+  useEffect(() => {
+    setNama(profile?.nama || '');
+  }, [profile]);
 
   const handleUpdateProfile = async () => {
     if (!user || !profile) return;
@@ -57,11 +66,39 @@ const Profile = () => {
     }
   };
 
+  const handleRefreshStatus = async () => {
+    setIsRefreshingStatus(true);
+    try {
+      await refreshProfile();
+      toast({
+        title: 'Status Diperbarui!',
+        description: 'Status membership telah direfresh',
+      });
+    } catch (error) {
+      console.error('Error refreshing status:', error);
+      toast({
+        title: 'Error',
+        description: 'Gagal memperbarui status',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsRefreshingStatus(false);
+    }
+  };
+
   const isPremium = profile?.role === 'premium' && 
                    (!profile.premium_until || new Date(profile.premium_until) > new Date());
 
   const premiumEndDate = profile?.premium_until ? 
-    new Date(profile.premium_until).toLocaleDateString('id-ID') : null;
+    new Date(profile.premium_until).toLocaleDateString('id-ID', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }) : null;
+
+  const daysUntilExpiry = profile?.premium_until ? 
+    Math.ceil((new Date(profile.premium_until).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : null;
 
   return (
     <div className="min-h-screen py-8 px-4">
@@ -135,19 +172,49 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="md:col-span-2">
                     <Label>Status Membership</Label>
-                    <div className="p-3 bg-muted rounded-md flex items-center">
-                      {isPremium ? (
-                        <>
-                          <Crown className="mr-2 h-4 w-4 text-primary" />
-                          <span className="text-primary font-semibold">Premium Member</span>
-                        </>
-                      ) : (
-                        <>
-                          <User className="mr-2 h-4 w-4 text-muted-foreground" />
-                          <span>Member Gratis</span>
-                        </>
+                    <div className="p-3 bg-muted rounded-md">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center">
+                          {isPremium ? (
+                            <>
+                              <CheckCircle className="mr-2 h-4 w-4 text-green-500" />
+                              <span className="text-primary font-semibold">Premium Member</span>
+                              <Crown className="ml-2 h-4 w-4 text-primary" />
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="mr-2 h-4 w-4 text-muted-foreground" />
+                              <span>Member Gratis</span>
+                            </>
+                          )}
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={handleRefreshStatus}
+                          disabled={isRefreshingStatus}
+                          className="text-xs"
+                        >
+                          <RefreshCw className={`h-3 w-3 mr-1 ${isRefreshingStatus ? 'animate-spin' : ''}`} />
+                          Refresh
+                        </Button>
+                      </div>
+                      {isPremium && (
+                        <div className="text-sm text-muted-foreground">
+                          <div>Berlaku hingga: {premiumEndDate}</div>
+                          {daysUntilExpiry && daysUntilExpiry > 0 && (
+                            <div className="text-green-600 font-medium">
+                              Tersisa {daysUntilExpiry} hari
+                            </div>
+                          )}
+                          {daysUntilExpiry && daysUntilExpiry <= 7 && daysUntilExpiry > 0 && (
+                            <div className="text-orange-500 font-medium mt-1">
+                              ⚠️ Membership akan berakhir dalam {daysUntilExpiry} hari
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>
@@ -182,28 +249,60 @@ const Profile = () => {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Premium Status Card */}
-            <Card className={`${isPremium ? 'border-primary/50 card-gradient' : 'card-gradient'}`}>
+            <Card className={`${isPremium ? 'border-primary/50 card-gradient shadow-lg' : 'card-gradient'}`}>
               <CardHeader className="text-center">
-                <Crown className={`h-12 w-12 mx-auto mb-2 ${isPremium ? 'text-primary' : 'text-muted-foreground'}`} />
+                <div className="relative">
+                  <Crown className={`h-12 w-12 mx-auto mb-2 ${isPremium ? 'text-primary' : 'text-muted-foreground'}`} />
+                  {isPremium && (
+                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white"></div>
+                  )}
+                </div>
                 <CardTitle className="text-lg">
                   {isPremium ? 'Premium Active' : 'Upgrade to Premium'}
                 </CardTitle>
                 <CardDescription>
                   {isPremium 
-                    ? `Aktif hingga ${premiumEndDate}` 
+                    ? (
+                        <div className="space-y-1">
+                          <div>Aktif hingga {premiumEndDate}</div>
+                          {daysUntilExpiry && daysUntilExpiry > 0 && (
+                            <div className={`font-medium ${daysUntilExpiry <= 7 ? 'text-orange-500' : 'text-green-600'}`}>
+                              {daysUntilExpiry <= 7 ? '⚠️ ' : '✅ '}
+                              {daysUntilExpiry} hari tersisa
+                            </div>
+                          )}
+                        </div>
+                      )
                     : 'Dapatkan akses ke semua fitur premium'
                   }
                 </CardDescription>
               </CardHeader>
-              {!isPremium && (
-                <CardContent>
+              <CardContent>
+                {isPremium ? (
+                  <div className="space-y-3">
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={handleRefreshStatus}
+                      disabled={isRefreshingStatus}
+                    >
+                      <RefreshCw className={`mr-2 h-4 w-4 ${isRefreshingStatus ? 'animate-spin' : ''}`} />
+                      Refresh Status
+                    </Button>
+                    <Link to="/premium">
+                      <Button variant="secondary" className="w-full">
+                        Perpanjang Premium
+                      </Button>
+                    </Link>
+                  </div>
+                ) : (
                   <Link to="/premium">
-                  <Button className="w-full btn-premium">
-                    Upgrade Sekarang
-                  </Button>
+                    <Button className="w-full btn-premium">
+                      Upgrade Sekarang
+                    </Button>
                   </Link>
-                </CardContent>
-              )}
+                )}
+              </CardContent>
             </Card>
 
             {/* Stats Card */}
