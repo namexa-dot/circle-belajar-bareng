@@ -148,6 +148,18 @@ const CategoriesManager = () => {
     return <div className="text-center py-4">Memuat kategori...</div>;
   }
 
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -156,7 +168,7 @@ const CategoriesManager = () => {
           <DialogTrigger asChild>
             <Button onClick={() => handleDialogClose()}>
               <Plus className="mr-2 h-4 w-4" />
-              Tambah Kategori
+              `${width < 768 ? '' : 'Tambah kategori'}`
             </Button>
           </DialogTrigger>
           <DialogContent>
