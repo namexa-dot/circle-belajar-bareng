@@ -174,6 +174,19 @@ const PremiumPackagesManager = () => {
     }).format(price);
   };
 
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   if (loading) {
     return <div className="text-center py-4">Memuat paket premium...</div>;
   }
@@ -186,7 +199,7 @@ const PremiumPackagesManager = () => {
           <DialogTrigger asChild>
             <Button onClick={() => handleDialogClose()}>
               <Plus className="mr-2 h-4 w-4" />
-              Tambah Paket
+              {width < 768 ? '' : 'Tambah paket'}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-lg">
