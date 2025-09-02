@@ -218,7 +218,19 @@ const EducationsManager = () => {
       default: return 'bg-gray-500/20 text-gray-300';
     }
   };
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
 
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
   if (loading) {
     return <div className="text-center py-4">Memuat konten edukasi...</div>;
   }
@@ -231,7 +243,7 @@ const EducationsManager = () => {
           <DialogTrigger asChild>
             <Button onClick={() => handleDialogClose()}>
               <Plus className="mr-2 h-4 w-4" />
-              Tambah Konten
+              {width < 768 ? '' : 'Tambah kategori'}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
