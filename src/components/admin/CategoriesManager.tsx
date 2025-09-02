@@ -143,11 +143,6 @@ const CategoriesManager = () => {
     setEditingCategory(null);
     form.reset();
   };
-
-  if (loading) {
-    return <div className="text-center py-4">Memuat kategori...</div>;
-  }
-
   const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
 
@@ -160,6 +155,10 @@ const CategoriesManager = () => {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  
+  if (loading) {
+    return <div className="text-center py-4">Memuat kategori...</div>;
+  }
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
@@ -168,7 +167,7 @@ const CategoriesManager = () => {
           <DialogTrigger asChild>
             <Button onClick={() => handleDialogClose()}>
               <Plus className="mr-2 h-4 w-4" />
-              `${width < 768 ? '' : 'Tambah kategori'}`
+              {width < 768 ? '' : 'Tambah kategori'}
             </Button>
           </DialogTrigger>
           <DialogContent>
