@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Shield, Users, BookOpen, Crown, Settings } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
 import CategoriesManager from '@/components/admin/CategoriesManager';
@@ -14,6 +15,7 @@ import UsersManager from '@/components/admin/UsersManager';
 const Admin = () => {
   const { profile, loading } = useAuth();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
 
   // Check if user is admin
   if (loading) {
@@ -58,22 +60,54 @@ const Admin = () => {
 
         {/* Admin Tabs */}
         <Tabs defaultValue="categories" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="categories" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Kategori
+          <TabsList className={`w-full mb-8 ${
+            isMobile 
+              ? "grid grid-cols-2 gap-2 h-auto p-2" 
+              : "grid grid-cols-4"
+          }`}>
+            <TabsTrigger 
+              value="categories" 
+              className={`flex items-center justify-center gap-2 ${
+                isMobile ? "flex-col p-3 h-auto text-xs" : "gap-2"
+              }`}
+            >
+              <BookOpen className={isMobile ? "h-5 w-5" : "h-4 w-4"} />
+              <span className={isMobile ? "text-center" : ""}>
+                {isMobile ? "Kategori" : "Kategori"}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="educations" className="flex items-center gap-2">
-              <BookOpen className="h-4 w-4" />
-              Konten Edukasi
+            <TabsTrigger 
+              value="educations" 
+              className={`flex items-center justify-center gap-2 ${
+                isMobile ? "flex-col p-3 h-auto text-xs" : "gap-2"
+              }`}
+            >
+              <BookOpen className={isMobile ? "h-5 w-5" : "h-4 w-4"} />
+              <span className={isMobile ? "text-center" : ""}>
+                {isMobile ? "Konten" : "Konten Edukasi"}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="packages" className="flex items-center gap-2">
-              <Crown className="h-4 w-4" />
-              Paket Premium
+            <TabsTrigger 
+              value="packages" 
+              className={`flex items-center justify-center gap-2 ${
+                isMobile ? "flex-col p-3 h-auto text-xs" : "gap-2"
+              }`}
+            >
+              <Crown className={isMobile ? "h-5 w-5" : "h-4 w-4"} />
+              <span className={isMobile ? "text-center" : ""}>
+                {isMobile ? "Premium" : "Paket Premium"}
+              </span>
             </TabsTrigger>
-            <TabsTrigger value="users" className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Pengguna
+            <TabsTrigger 
+              value="users" 
+              className={`flex items-center justify-center gap-2 ${
+                isMobile ? "flex-col p-3 h-auto text-xs" : "gap-2"
+              }`}
+            >
+              <Users className={isMobile ? "h-5 w-5" : "h-4 w-4"} />
+              <span className={isMobile ? "text-center" : ""}>
+                {isMobile ? "Pengguna" : "Pengguna"}
+              </span>
             </TabsTrigger>
           </TabsList>
 
