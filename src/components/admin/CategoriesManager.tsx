@@ -167,7 +167,7 @@ const CategoriesManager = () => {
           <DialogTrigger asChild>
             <Button onClick={() => handleDialogClose()}>
               <Plus className="mr-2 h-4 w-4" />
-              {width < 768 && 'Tambah kategori'}
+              {width < 768 ?? 'Tambah kategori'}
             </Button>
           </DialogTrigger>
           <DialogContent>
