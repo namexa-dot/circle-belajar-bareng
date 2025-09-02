@@ -243,7 +243,7 @@ const EducationsManager = () => {
           <DialogTrigger asChild>
             <Button onClick={() => handleDialogClose()}>
               <Plus className="mr-2 h-4 w-4" />
-              {width < 768 ? '' : 'Tambah kategori'}
+              {width < 768 ? '' : 'Tambah edukasi'}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
