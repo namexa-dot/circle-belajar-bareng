@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,28 +18,62 @@ import {
   Zap
 } from 'lucide-react';
 
+interface PremiumPackage {
+  id: string;
+  name: string;
+  price: number;
+  description: string | null;
+  duration_months: number;
+  is_popular: boolean;
+  is_active: boolean;
+}
+
 const Premium = () => {
   const { profile, user } = useAuth();
   const { toast } = useToast();
-  const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [packages, setPackages] = useState<PremiumPackage[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const plans = [
-    {
-      id: 'monthly',
-      name: '1 Bulan',
-      price: 'Rp 40.000',
-      description: 'Akses premium selama 1 bulan',
-      popular: false,
-    },
-    {
-      id: 'yearly',
-      name: '1 Tahun',
-      price: 'Rp 400.000',
-      description: 'Akses premium selama 1 tahun',
-      popular: true,
-      savings: 'Hemat Rp 80.000!'
+  const fetchPackages = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('premium_packages')
+        .select('*')
+        .eq('is_active', true)
+        .order('duration_months', { ascending: true });
+
+      if (error) throw error;
+
+      setPackages(data || []);
+      
+      // Set default selected plan to the first package if none selected
+      if (data && data.length > 0 && !selectedPlan) {
+        setSelectedPlan(data[0].id);
+      }
+    } catch (error) {
+      console.error('Error fetching packages:', error);
+      toast({
+        title: 'Error',
+        description: 'Gagal memuat paket premium',
+        variant: 'destructive',
+      });
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
+
+  useEffect(() => {
+    fetchPackages();
+  }, []);
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(price);
+  };
 
   const benefits = [
     {
@@ -179,50 +213,62 @@ const Premium = () => {
             {/* Pricing Plans */}
             <div className="mb-16">
               <h2 className="text-3xl font-bold text-center mb-8">Pilih Paket Berlangganan</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                {plans.map((plan) => (
-                  <Card 
-                    key={plan.id}
-                    className={`card-gradient relative cursor-pointer transition-all duration-300 ${
-                      selectedPlan === plan.id 
-                        ? 'ring-2 ring-primary scale-105' 
-                        : 'hover:scale-102'
-                    } ${plan.popular ? 'border-primary/50' : ''}`}
-                    onClick={() => setSelectedPlan(plan.id as 'monthly' | 'yearly')}
-                  >
-                    {plan.popular && (
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                        <Badge className="premium-badge">
-                          <Star className="mr-1 h-3 w-3" />
-                          Paling Populer
-                        </Badge>
-                      </div>
-                    )}
-                    
-                    <CardHeader className="text-center">
-                      <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                      <div className="py-4">
-                        <div className="text-4xl font-bold text-primary">{plan.price}</div>
-                        {plan.savings && (
-                          <Badge variant="secondary" className="mt-2">
-                            {plan.savings}
+              
+              {loading ? (
+                <div className="text-center">
+                  <div className="text-muted-foreground">Memuat paket premium...</div>
+                </div>
+              ) : packages.length === 0 ? (
+                <div className="text-center">
+                  <div className="text-muted-foreground">Tidak ada paket premium tersedia</div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+                  {packages.map((pkg) => (
+                    <Card 
+                      key={pkg.id}
+                      className={`card-gradient relative cursor-pointer transition-all duration-300 ${
+                        selectedPlan === pkg.id 
+                          ? 'ring-2 ring-primary scale-105' 
+                          : 'hover:scale-102'
+                      } ${pkg.is_popular ? 'border-primary/50' : ''}`}
+                      onClick={() => setSelectedPlan(pkg.id)}
+                    >
+                      {pkg.is_popular && (
+                        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                          <Badge className="premium-badge">
+                            <Star className="mr-1 h-3 w-3" />
+                            Paling Populer
                           </Badge>
-                        )}
-                      </div>
-                      <CardDescription>{plan.description}</CardDescription>
-                    </CardHeader>
-                    
-                    <CardContent>
-                      <Button 
-                        className="w-full btn-premium"
-                        onClick={() => handleUpgrade(plan.id)}
-                      >
-                        Pilih Paket Ini
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+                        </div>
+                      )}
+                      
+                      <CardHeader className="text-center">
+                        <CardTitle className="text-2xl">{pkg.name}</CardTitle>
+                        <div className="py-4">
+                          <div className="text-4xl font-bold text-primary">{formatPrice(pkg.price)}</div>
+                          <div className="text-sm text-muted-foreground mt-1">
+                            {pkg.duration_months} bulan
+                          </div>
+                        </div>
+                        <CardDescription>{pkg.description || `Akses premium selama ${pkg.duration_months} bulan`}</CardDescription>
+                      </CardHeader>
+                      
+                      <CardContent>
+                        <Button 
+                          className="w-full btn-premium"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleUpgrade(pkg.id);
+                          }}
+                        >
+                          Pilih Paket Ini
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
           </>
         )}
