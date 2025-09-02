@@ -164,6 +164,19 @@ const UsersManager = () => {
     );
   };
 
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  
   if (loading) {
     return <div className="text-center py-4">Memuat data pengguna...</div>;
   }
@@ -173,6 +186,7 @@ const UsersManager = () => {
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Daftar Pengguna</h3>
         <div className="flex items-center space-x-2">
+          {width < 768 ? '':
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
             <Input
@@ -182,6 +196,7 @@ const UsersManager = () => {
               className="pl-10 w-64"
             />
           </div>
+          }
         </div>
       </div>
 
