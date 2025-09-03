@@ -278,18 +278,21 @@ const UsersManager = () => {
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Dialog open={isDialogOpen && editingUser?.id === user.id} onOpenChange={(open) => {
-                      if (!open) handleDialogClose();
-                    }}>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleEdit(user)}
-                        >
-                          <Edit className="h-3 w-3" />
-                        </Button>
-                      </DialogTrigger>
+                    <div className="flex items-center gap-2 justify-end">
+                      <Dialog open={isDialogOpen && editingUser?.id === user.id} onOpenChange={(open) => {
+                        if (!open) handleDialogClose();
+                      }}>
+                        <DialogTrigger asChild>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEdit(user)}
+                            className="flex items-center gap-1 hover:bg-primary/10 hover:text-primary transition-colors"
+                          >
+                            <Edit className="h-3 w-3" />
+                            <span className="hidden sm:inline">Edit Role</span>
+                          </Button>
+                        </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Edit Pengguna</DialogTitle>
@@ -352,7 +355,8 @@ const UsersManager = () => {
                           </form>
                         </Form>
                       </DialogContent>
-                    </Dialog>
+                      </Dialog>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
