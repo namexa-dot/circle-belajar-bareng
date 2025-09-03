@@ -237,7 +237,7 @@ const Premium = () => {
                   <div className="text-muted-foreground">Tidak ada paket premium tersedia</div>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto justify-center border-red-400">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto justify-center border-red-400 border-4">
                   {packages.map((pkg) => (
                     <Card 
                       key={pkg.id}
