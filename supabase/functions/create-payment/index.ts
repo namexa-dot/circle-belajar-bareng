@@ -43,10 +43,13 @@ serve(async (req) => {
     // Get authenticated user
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
+      console.error('No authorization header provided');
       throw new Error("Authorization header required");
     }
 
     const token = authHeader.replace("Bearer ", "");
+    console.log('Token length:', token.length, 'Token prefix:', token.substring(0, 20));
+    
     const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
     
     if (authError || !user) {

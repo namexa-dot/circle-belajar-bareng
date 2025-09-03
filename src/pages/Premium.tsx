@@ -115,6 +115,8 @@ const Premium = () => {
         description: 'Silakan login terlebih dahulu untuk melanjutkan pembayaran',
         variant: 'destructive',
       });
+      // Redirect to auth page
+      window.location.href = '/auth';
       return;
     }
 
@@ -147,6 +149,11 @@ const Premium = () => {
       }
 
       if (data?.token) {
+        // Check if Snap.js is loaded
+        if (typeof (window as any).snap === 'undefined') {
+          throw new Error('Midtrans Snap.js not loaded. Please refresh the page and try again.');
+        }
+        
         // Use Snap.js popup
         (window as any).snap.pay(data.token, {
           onSuccess: function(result: any) {
