@@ -34,8 +34,11 @@ serve(async (req) => {
 
     console.log('Environment variables check passed');
 
-    // Create Supabase client with service role key for database operations
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+    // Create Supabase client for authentication check (using anon key first)
+    const supabaseAuth = createClient(
+      supabaseUrl, 
+      Deno.env.get("SUPABASE_ANON_KEY") || ""
+    );
 
     // Get authenticated user
     const authHeader = req.headers.get("Authorization");
@@ -44,11 +47,17 @@ serve(async (req) => {
     }
 
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
     
     if (authError || !user) {
+      console.error("Authentication error:", authError);
       throw new Error("User not authenticated");
     }
+
+    // Create Supabase client with service role key for database operations
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false }
+    });
 
     const { paket }: PaymentRequest = await req.json();
 
@@ -57,8 +66,21 @@ serve(async (req) => {
       throw new Error("Invalid paket. Must be 'monthly' or 'yearly'");
     }
 
-    // Set amount based on paket
-    const amount = paket === 'monthly' ? 40000 : 400000;
+    // Get pricing from premium_packages table
+    const { data: packageData, error: packageError } = await supabaseClient
+      .from('premium_packages')
+      .select('price, duration_months')
+      .eq('is_active', true)
+      .eq('duration_months', paket === 'monthly' ? 1 : 12)
+      .single();
+
+    if (packageError || !packageData) {
+      console.error('Package fetch error:', packageError);
+      // Fallback to default pricing
+      const amount = paket === 'monthly' ? 40000 : 400000;
+    }
+
+    const amount = packageData?.price || (paket === 'monthly' ? 40000 : 400000);
     
     // Generate unique order ID (shortened for Midtrans compatibility)
     const timestamp = Date.now().toString();

@@ -118,6 +118,20 @@ const Premium = () => {
       return;
     }
 
+    // Find the selected package to get duration
+    const selectedPackage = packages.find(pkg => pkg.id === planId);
+    if (!selectedPackage) {
+      toast({
+        title: 'Paket Tidak Ditemukan',
+        description: 'Paket premium yang dipilih tidak ditemukan',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    // Convert duration to paket format expected by backend
+    const paket = selectedPackage.duration_months === 1 ? 'monthly' : 'yearly';
+
     try {
       toast({
         title: 'Memproses...',
@@ -125,7 +139,7 @@ const Premium = () => {
       });
 
       const { data, error } = await supabase.functions.invoke('create-payment', {
-        body: { paket: planId }
+        body: { paket }
       });
 
       if (error) {
