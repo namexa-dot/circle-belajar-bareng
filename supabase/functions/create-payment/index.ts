@@ -74,13 +74,14 @@ serve(async (req) => {
       .eq('duration_months', paket === 'monthly' ? 1 : 12)
       .single();
 
+    let amount: number;
     if (packageError || !packageData) {
       console.error('Package fetch error:', packageError);
       // Fallback to default pricing
-      const amount = paket === 'monthly' ? 40000 : 400000;
+      amount = paket === 'monthly' ? 40000 : 400000;
+    } else {
+      amount = packageData.price;
     }
-
-    const amount = packageData?.price || (paket === 'monthly' ? 40000 : 400000);
     
     // Generate unique order ID (shortened for Midtrans compatibility)
     const timestamp = Date.now().toString();
