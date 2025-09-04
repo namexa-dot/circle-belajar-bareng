@@ -87,7 +87,7 @@ const Home = () => {
       name: 'Discord',
       description: 'Free and Premium Class & Networking',
       icon: MessageCircle,
-      url: 'https://belajarbareng-fin.vercel.app/',
+      url: 'https://discord.gg/v9UsSvvD',
       color: 'text-indigo-400',
       bgColor: 'bg-indigo-400/10 hover:bg-indigo-400/20',
       borderColor: 'border-indigo-400/20'
