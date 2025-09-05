@@ -72,19 +72,27 @@ serve(async (req) => {
     // Get pricing from premium_packages table
     const { data: packageData, error: packageError } = await supabaseClient
       .from('premium_packages')
-      .select('price, duration_months')
+      .select('price, duration_months, name')
       .eq('is_active', true)
       .eq('duration_months', paket === 'monthly' ? 1 : 12)
-      .single();
+      .order('is_popular', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
     let amount: number;
+    let packageName: string;
     if (packageError || !packageData) {
       console.error('Package fetch error:', packageError);
       // Fallback to default pricing
       amount = paket === 'monthly' ? 40000 : 400000;
+      packageName = `Premium Membership ${paket === 'monthly' ? '1 Bulan' : '1 Tahun'}`;
     } else {
       amount = packageData.price;
+      packageName = packageData.name;
     }
+
+    console.log(`Using package: ${packageName} with price: ${amount}`);
     
     // Generate unique order ID (shortened for Midtrans compatibility)
     const timestamp = Date.now().toString();
@@ -131,7 +139,7 @@ serve(async (req) => {
         id: `premium-${paket}`,
         price: amount,
         quantity: 1,
-        name: `Premium Membership ${paket === 'monthly' ? '1 Bulan' : '1 Tahun'}`
+        name: packageName
       }]
     };
 
