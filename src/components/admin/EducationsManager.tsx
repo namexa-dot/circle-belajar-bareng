@@ -116,6 +116,9 @@ const EducationsManager = () => {
 
   const onSubmit = async (data: EducationFormData) => {
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (editingEducation) {
         // Update existing education
         const { error } = await supabase
@@ -133,7 +136,10 @@ const EducationsManager = () => {
         // Create new education
         const { error } = await supabase
           .from('educations')
-          .insert(data as any);
+          .insert({
+            ...data,
+            user_id: user?.id,
+          });
 
         if (error) throw error;
 
